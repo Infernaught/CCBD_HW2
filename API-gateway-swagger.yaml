@@ -27,16 +27,16 @@ paths:
   /folder/item:
     put:
       parameters:
-      - name: "Content-Type"
-        in: "header"
-        required: false
-        type: "string"
-      - name: "x-amz-meta-customLabels"
+      - name: "customLabel"
         in: "header"
         required: false
         type: "string"
       - name: "object"
         in: "query"
+        required: false
+        type: "string"
+      - name: "contentType"
+        in: "header"
         required: false
         type: "string"
       - name: "bucket"
