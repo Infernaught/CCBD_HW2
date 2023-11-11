@@ -22,8 +22,8 @@ phases:
       - mv lambda_function.py LF2.py
   post_build:
     commands:
-      - aws lambda update-function-code --function-name index-photos --zip_file LF1_deployment.zip
-      - aws lambda update-function-code --function-name search-phots --zip_file LF2_deployment.zip
+      - aws lambda update-function-code --function-name index-photos --zip-file LF1_deployment.zip
+      - aws lambda update-function-code --function-name search-phots --zip-file LF2_deployment.zip
 
 artifacts:
   files:
