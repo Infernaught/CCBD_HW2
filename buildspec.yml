@@ -10,6 +10,7 @@ phases:
   pre_build:
     commands:
       - pip install requests-aws4auth opensearch-py inflect
+      - ls
 artifacts:
   files:
     - LF1.py
