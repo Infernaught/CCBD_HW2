@@ -9,11 +9,25 @@ phases:
       python: 3.9
   pre_build:
     commands:
-      - pip install requests-aws4auth opensearch-py inflect
-      - ls
+      - pip3.9 install --target ./package requests-aws4auth opensearch-py inflect
+      - cd package
+      - zip -r ../LF1_deployment.zip .
+      - zip -r ../LF2_deployment.zip .
+      - cd ..
+      - mv LF1.py lambda_function.py
+      - zip LF1_deployment.zip lambda_function.py
+      - mv lambda_function.py LF1.py
+      - mv LF2.py lambda_function.py
+      - zip LF2_deployment.zip lambda_function.py
+      - mv lambda_function.py LF2.py
+  post_build:
+    commands:
+      - aws lambda update-function-code --function-name index-photos --zip_file LF1_deployment.zip
+      - aws lambda update-function-code --function-name search-phots --zip_file LF2_deployment.zip
+
 artifacts:
   files:
-    - LF1.py
-    - LF2.py
+    - LF1_deployment.zip
+    - LF2_deployment.zip
     - appspec.yml
   name: lambdas
