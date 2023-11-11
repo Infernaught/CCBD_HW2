@@ -8,6 +8,14 @@
  				"Alias": "index-photos-alias-1",
  				"CurrentVersion": "1",
  				"TargetVersion": "1"
+ 			},
+    "LF2.py": {
+ 			"Type": "AWS::Lambda::Function",
+ 			"Properties": {
+ 				"Name": "search-photos",
+ 				"Alias": "search-photos-alias",
+ 				"CurrentVersion": "1",
+ 				"TargetVersion": "1"
  			}
  		}
  	}]
