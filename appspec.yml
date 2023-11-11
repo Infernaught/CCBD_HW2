@@ -1,13 +1,13 @@
 {
  	"version": 0.0,
  	"Resources": [{
- 		"LF3.py": {
+ 		"LF1.py": {
  			"Type": "AWS::Lambda::Function",
  			"Properties": {
  				"Name": "index-photos",
  				"Alias": "index-photos-alias-1",
  				"CurrentVersion": "1",
- 				"TargetVersion": "1"
+ 				"TargetVersion": "2"
  			}
  		}
  	}]
