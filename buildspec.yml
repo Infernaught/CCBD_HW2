@@ -1,0 +1,17 @@
+version: 0.2
+
+proxy:
+  logs: yes
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.11
+  pre_build:
+    commands:
+      - pip install opensearchpy requests_aws4auth
+artifacts:
+  files:
+    - LF1.py
+    - LF2.py
+  name: lambdas
