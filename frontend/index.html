@@ -32,10 +32,17 @@
     <div id="userMessage"></div>
   </div>
   <div>
-    <h1>You can also try with speech-to-text</h1>
+    <h2>You can also try with speech-to-text</h2>
     <h4 id="status">Hit "Speech to Text" below and start speaking. To submit your query, simply stop speaking.</h4>
     <button onclick="startRecognition()">Speech to Text</button>
     <div id="result" class="hide"></div>
+  </div>
+  <div>
+    <h2>Upload image</h2>
+    <input type="file" id="file" name="imgUpload" accept="image/png, image/jpeg, image/jpg"/>
+    <div id="uploadResult"></div>
+  </div>
+  <div class="canvas">
   </div>
   <script src="./assets/js/album.js"></script>
   <script src="./assets/js/voice.js"></script>

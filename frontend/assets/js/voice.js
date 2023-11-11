@@ -19,10 +19,14 @@ function startRecognition() {
     };
 
     recognition.onresult = (result) => {
+        const userInputField = $('#userInput');
         output.classList.remove("hide");
-        output.innerHTML = `I'm ${Math.floor(
-        result.results[0][0].confidence * 100
-        )}% certain you just said: <b>${result.results[0][0].transcript}</b>`;
+        //output.innerHTML = `I'm ${Math.floor(
+        //result.results[0][0].confidence * 100
+        //)}% certain you just said: <b>${result.results[0][0].transcript}</b>`;
+        userInputField.val(result.results[0][0].transcript);
+        submitUserInput();
+
     };
 
     recognition.start();
