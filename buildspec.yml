@@ -9,7 +9,7 @@ phases:
       python: 3.9
   pre_build:
     commands:
-      - pip install opensearchpy requests_aws4auth
+      - pip install requests-aws4auth opensearch-py
 artifacts:
   files:
     - LF1.py
