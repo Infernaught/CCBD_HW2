@@ -96,6 +96,16 @@ def dispatch(event):
         }
         print(resp)
         return resp
+    else:
+        json_resp = {'results': label}
+        resp = {
+            "isBase64Encoded": False,
+            'statusCode': 403,
+            "headers": {"Access-Control-Allow-Origin": "*"},
+            'body': json.dumps(json_resp)
+        }
+        print(resp)
+        return resp
 
 def lambda_handler(event, context):
     print(f"event: {event}")
