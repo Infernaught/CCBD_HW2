@@ -12,6 +12,10 @@ phases:
       - pip3.9 install --target ./package pip install requests-aws4auth opensearch-py inflect
       - cd package
       - zip -r ../LF1_deployment.zip .
+      - cd ..
+      - rm -r package
+      - pip3.9 install --target ./package pip install requests-aws4auth opensearch-py inflect
+      - cd package
       - zip -r ../LF2_deployment.zip .
       - cd ..
       - mv LF1.py lambda_function.py
