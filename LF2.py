@@ -2,7 +2,7 @@ import os
 import json
 import string
 import boto3
-import inflect
+#import inflect
 from opensearchpy import OpenSearch, RequestsHttpConnection
 from requests_aws4auth import AWS4Auth
 from botocore.exceptions import ClientError
@@ -75,15 +75,15 @@ def dispatch(event):
     
     msg_from_lex = response.get('messages', [])
     if msg_from_lex:
-        p = inflect.engine()
+        #p = inflect.engine()
         labels = msg_from_lex[0]['content']
         print(f"labels interpreted: ", labels)
         labels = labels.split(', ')
         img1 = img2 = []
         if labels[0] != 'label1':
-            img1 = query(string.capwords(p.singluar_noun(labels[0])))
+            img1 = query(string.capwords(labels[0]))
         if labels[1] != 'label2':
-            img2 = query(string.capwords(p.singluar_noun(labels[1])))
+            img2 = query(string.capwords(labels[1]))
         else:
             labels = [labels[0]]
         label = [{'url':None, 'labels': labels}]
