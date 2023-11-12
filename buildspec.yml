@@ -9,7 +9,7 @@ phases:
       python: 3.9
   pre_build:
     commands:
-      - pip3.9 install --target ./package pip install pydantic pydantic-core urllib3==1.26.15 requests==2.29.0 requests-aws4auth opensearch-py inflect
+      - pip3.9 install --target ./package pip install requests-aws4auth opensearch-py inflect
       - cd package
       - zip -r ../LF1_deployment.zip .
       - zip -r ../LF2_deployment.zip .
@@ -23,7 +23,8 @@ phases:
   post_build:
     commands:
       - aws lambda update-function-code --function-name index-photos --zip-file fileb://LF1_deployment.zip
-      - aws lambda update-function-code --function-name search-photos --zip-file fileb://LF2_deployment.zip
+      - aws lambda update-function-code --function-name arn:aws:lambda:us-east-1:558602268537:function:hw2-LF2
+ --zip-file fileb://LF2_deployment.zip
 
 artifacts:
   files:
