@@ -9,7 +9,7 @@ phases:
       python: 3.9
   pre_build:
     commands:
-      - pip3.9 install --target ./package urllib3==1.26.15 requests==2.29.0 requests-aws4auth opensearch-py inflect
+      - pip3.9 install --target ./package pip install pydantic pydantic-core urllib3==1.26.15 requests==2.29.0 requests-aws4auth opensearch-py inflect
       - cd package
       - zip -r ../LF1_deployment.zip .
       - zip -r ../LF2_deployment.zip .
