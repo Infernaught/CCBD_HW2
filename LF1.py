@@ -42,6 +42,7 @@ def lambda_handler(event, context):
     labels = []
     if "x-amz-meta-customlabels" in s3response:
         labels += s3response["x-amz-meta-customlabels"]
+        print(f"Labels: {labels}")
     for label in rresponse["Labels"]:
         labels.append(label["Name"])
     curr_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
