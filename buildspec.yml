@@ -14,7 +14,7 @@ phases:
       - zip -r ../LF1_deployment.zip .
       - cd ..
       - rm -r package
-      - pip3.9 install --target ./package pip install requests-aws4auth opensearch-py textblob
+      - pip3.9 install --target ./package pip install requests-aws4auth opensearch-py
       - cd package
       - zip -r ../LF2_deployment.zip .
       - cd ..
