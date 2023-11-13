@@ -24,6 +24,8 @@ phases:
       - mv LF2.py lambda_function.py
       - zip LF2_deployment.zip lambda_function.py
       - mv lambda_function.py LF2.py
+      - mv buildspec.yml buildspec_orig.yml
+      - mv deploy.yml buildspec.yml
   post_build:
     commands:
       - aws lambda update-function-code --function-name index-photos --zip-file fileb://LF1_deployment.zip
@@ -33,5 +35,5 @@ artifacts:
   files:
     - LF1_deployment.zip
     - LF2_deployment.zip
-    - appspec.yml
+    - buildspec.yml
   name: lambdas
