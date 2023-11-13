@@ -5,7 +5,7 @@ import boto3
 from opensearchpy import OpenSearch, RequestsHttpConnection
 from requests_aws4auth import AWS4Auth
 from botocore.exceptions import ClientError
-from pattern.en import singularize
+from textblob import TextBlob
 
 REGION = 'us-east-1'
 HOST = 'search-photos-2jmjglwsrhdiu6pxozfdxexvoe.us-east-1.es.amazonaws.com'
@@ -80,9 +80,11 @@ def dispatch(event):
         labels = labels.split(', ')
         img1 = img2 = []
         if labels[0] != 'label1':
-            img1 = query(singularize(string.capwords(labels[0])))
+            word = TextBlob(string.capwords(labels[0])).words[0]
+            img1 = query(word.singularize())
         if labels[1] != 'label2':
-            img2 = query(singularize(string.capwords(labels[1])))
+            word = TextBlob(string.capwords(labels[1])).words[0]
+            img2 = query(word.singularize())
         else:
             labels = [labels[0]]
         label = [{'url':None, 'labels': labels}]
