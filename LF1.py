@@ -44,7 +44,7 @@ def lambda_handler(event, context):
         labels += s3response["x-amz-meta-customlabels"]
     for label in rresponse["Labels"]:
         labels.append(label["Name"])
-    curr_time = datetime.now().strftime("%Y-%m-$dT%H:%M:%S")
+    curr_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
     json_dict = {"objectKey": obj, "bucket": bucket, "createdTimestamp": curr_time, "labels": labels}
     response = add_to_os(json_dict)
     print(f'response: {response}')
