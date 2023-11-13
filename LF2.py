@@ -2,10 +2,10 @@ import os
 import json
 import string
 import boto3
-#import inflect
 from opensearchpy import OpenSearch, RequestsHttpConnection
 from requests_aws4auth import AWS4Auth
 from botocore.exceptions import ClientError
+from pattern.en import singularize
 
 REGION = 'us-east-1'
 HOST = 'search-photos-2jmjglwsrhdiu6pxozfdxexvoe.us-east-1.es.amazonaws.com'
@@ -21,7 +21,7 @@ def get_awsauth(region, service):
                     session_token=cred.token)
 
 def query(term):
-    q = { "size": 3,
+    q = { "size": 5,
         "query": {
             "bool": {
             "must": {
@@ -75,15 +75,14 @@ def dispatch(event):
     
     msg_from_lex = response.get('messages', [])
     if msg_from_lex:
-        #p = inflect.engine()
         labels = msg_from_lex[0]['content']
         print(f"labels interpreted: ", labels)
         labels = labels.split(', ')
         img1 = img2 = []
         if labels[0] != 'label1':
-            img1 = query(string.capwords(labels[0]))
+            img1 = query(singularize(string.capwords(labels[0])))
         if labels[1] != 'label2':
-            img2 = query(string.capwords(labels[1]))
+            img2 = query(singularize(string.capwords(labels[1])))
         else:
             labels = [labels[0]]
         label = [{'url':None, 'labels': labels}]

@@ -9,12 +9,12 @@ phases:
       python: 3.9
   pre_build:
     commands:
-      - pip3.9 install --target ./package pip install requests-aws4auth opensearch-py inflect
+      - pip3.9 install --target ./package pip install requests-aws4auth opensearch-py 
       - cd package
       - zip -r ../LF1_deployment.zip .
       - cd ..
       - rm -r package
-      - pip3.9 install --target ./package pip install requests-aws4auth opensearch-py inflect
+      - pip3.9 install --target ./package pip install requests-aws4auth opensearch-py Pattern
       - cd package
       - zip -r ../LF2_deployment.zip .
       - cd ..
