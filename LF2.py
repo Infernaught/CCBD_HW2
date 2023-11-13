@@ -6,6 +6,8 @@ from opensearchpy import OpenSearch, RequestsHttpConnection
 from requests_aws4auth import AWS4Auth
 from botocore.exceptions import ClientError
 from textblob import TextBlob
+import nltk
+nltk.download('wordnet')
 
 REGION = 'us-east-1'
 HOST = 'search-photos-2jmjglwsrhdiu6pxozfdxexvoe.us-east-1.es.amazonaws.com'
