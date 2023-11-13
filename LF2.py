@@ -5,9 +5,9 @@ import boto3
 from opensearchpy import OpenSearch, RequestsHttpConnection
 from requests_aws4auth import AWS4Auth
 from botocore.exceptions import ClientError
-from textblob import TextBlob
-import nltk
-nltk.download('wordnet')
+#from textblob import TextBlob
+#import nltk
+#nltk.download('wordnet')
 
 REGION = 'us-east-1'
 HOST = 'search-photos-2jmjglwsrhdiu6pxozfdxexvoe.us-east-1.es.amazonaws.com'
@@ -82,11 +82,13 @@ def dispatch(event):
         labels = labels.split(', ')
         img1 = img2 = []
         if labels[0] != 'label1':
-            word = TextBlob(string.capwords(labels[0])).words[0]
-            img1 = query(word.singularize())
+            word = string.capwords(labels[0])
+            #word = TextBlob(word).words[0]
+            img1 = query(word)
         if labels[1] != 'label2':
-            word = TextBlob(string.capwords(labels[1])).words[0]
-            img2 = query(word.singularize())
+            word = string.capwords(labels[1])
+            #word = TextBlob(word).words[0]
+            img2 = query(word)
         else:
             labels = [labels[0]]
         label = [{'url':None, 'labels': labels}]
