@@ -35,6 +35,7 @@ def lambda_handler(event, context):
     bucket = info["s3"]["bucket"]["name"]
     obj = info["s3"]["object"]["key"]
     print(f"Bucket: {bucket}; Object: {obj}")
+    print(f"Info: {info}")
     if info["eventSource"] == "aws:s3" and info["eventName"] == "ObjectCreated:Put":
         rresponse = rclient.detect_labels(Image={'S3Object':{'Bucket':bucket,'Name':obj}})
     s3client = boto3.client("s3", REGION)
