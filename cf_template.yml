@@ -1,0 +1,426 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  lf1:
+    Type: AWS::Lambda::Function
+    DeletionPolicy: Delete
+    Properties:
+      Runtime: python3.11
+      FunctionName: index-photos-cf
+      Handler: lambda_function.lambda_handler
+      Role: !GetAtt lf1Role.Arn
+      Code:
+        S3Bucket: ccbd-hw-2-lambdas
+        S3Key: LF1_deployment.zip
+      Timeout: 300
+  lf1Role:
+    Type: AWS::IAM::Role
+    DeletionPolicy: Delete
+    Properties:
+      RoleName: r-index-photos-cf
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/AmazonOpenSearchServiceFullAccess
+        - arn:aws:iam::aws:policy/AmazonRekognitionFullAccess
+  lf1Perm:
+    Type: AWS::Lambda::Permission
+    DeletionPolicy: Delete
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt lf1.Arn
+      Principal: s3.amazonaws.com
+      SourceAccount: 889594017971
+      SourceArn: !Sub arn:aws:s3:::${photoBucket}
+  lf2Role:
+    Type: AWS::IAM::Role
+    DeletionPolicy: Delete
+    Properties:
+      RoleName: r-search-photos-cf
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/AmazonOpenSearchServiceFullAccess
+        - arn:aws:iam::aws:policy/AmazonLexFullAccess
+  lf2Perm:
+    Type: AWS::Lambda::Permission
+    DeletionPolicy: Delete
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt lf2.Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${gateway}/*/GET/search
+  lf2:
+    Type: AWS::Lambda::Function
+    DeletionPolicy: Delete
+    Properties:
+      Runtime: python3.11
+      FunctionName: search-photos-cf
+      Handler: lambda_function.lambda_handler
+      Role: !GetAtt lf2Role.Arn
+      Code:
+        S3Bucket: ccbd-hw-2-lambdas
+        S3Key: LF2_deployment.zip
+      Timeout: 300
+  frontendBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+    Properties:
+      BucketName: hw2-frontend-us-east1-cf
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      WebsiteConfiguration:
+        IndexDocument: index.html
+  photoBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+    Properties:
+      BucketName: hw2-photos-us-east1-cf
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: s3:ObjectCreated:Put
+            Function: !GetAtt lf1.Arn
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+  photoBucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    DeletionPolicy: Delete
+    Properties:
+      Bucket: !Ref photoBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Sid: AllowPublicEverything
+          Effect: Allow
+          Principal: "*"
+          Action: s3:*
+          Resource:
+          - !Sub arn:aws:s3:::${photoBucket}
+          - !Sub arn:aws:s3:::${photoBucket}/*
+  frontendBucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    DeletionPolicy: Delete
+    Properties:
+      Bucket: !Ref frontendBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Sid: PublicReadGetObject
+          Effect: Allow
+          Principal: "*"
+          Action:
+          - s3:getObject
+          - s3:listBucket
+          Resource:
+          - !Sub arn:aws:s3:::${frontendBucket}
+          - !Sub arn:aws:s3:::${frontendBucket}/*
+  gatewayStage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      RestApiId: !Ref gateway
+      StageName: dev2
+      DeploymentId: !Ref gatewayDeployment
+  gatewayDeployment:
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      RestApiId: !Ref gateway
+  gatewayRole:
+    Type: AWS::IAM::Role
+    DeletionPolicy: Delete
+    Properties:
+      RoleName: gateway-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Sid: ''
+          Effect: Allow
+          Principal:
+            Service: apigateway.amazonaws.com
+          Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+  gateway:
+    Type: AWS::ApiGateway::RestApi
+    DeletionPolicy: Delete
+    Properties:
+      Body:
+        swagger: "2.0"
+        info:
+          description: "AI Photo Search application, built during the Cloud and Big Data course\
+            \ at Columbia University."
+          version: "1.0.0"
+          title: "AI Photo Search"
+        host: "hk5v5cdowc.execute-api.us-east-1.amazonaws.com"
+        basePath: "/dev2"
+        schemes:
+        - "https"
+        paths:
+          /folder:
+            options:
+              consumes:
+              - "application/json"
+              responses:
+                "200":
+                  description: "200 response"
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: "string"
+                    Access-Control-Allow-Methods:
+                      type: "string"
+                    Access-Control-Allow-Headers:
+                      type: "string"
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: "200"
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Methods: "'OPTIONS'"
+                      method.response.header.Access-Control-Allow-Headers: "'*'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                requestTemplates:
+                  application/json: "{\"statusCode\": 200}"
+                passthroughBehavior: "when_no_match"
+                type: "mock"
+          /folder/item:
+            put:
+              parameters:
+              - name: "customLabel"
+                in: "header"
+                required: false
+                type: "string"
+              - name: "object"
+                in: "query"
+                required: false
+                type: "string"
+              - name: "contentType"
+                in: "header"
+                required: false
+                type: "string"
+              - name: "bucket"
+                in: "query"
+                required: false
+                type: "string"
+              responses:
+                "200":
+                  description: "200 response"
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: "string"
+              x-amazon-apigateway-integration:
+                credentials: !GetAtt gatewayRole.Arn
+                httpMethod: "PUT"
+                uri: "arn:aws:apigateway:us-east-1:s3:path/{bucket}/{object}"
+                responses:
+                  default:
+                    statusCode: "200"
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                requestParameters:
+                  integration.request.path.object: "method.request.querystring.object"
+                  integration.request.header.x-amz-meta-customLabels: "method.request.header.customLabel"
+                  integration.request.path.bucket: "method.request.querystring.bucket"
+                  integration.request.header.Content-Type: "method.request.header.contentType"
+                passthroughBehavior: "when_no_match"
+                contentHandling: "CONVERT_TO_BINARY"
+                type: "aws"
+            options:
+              consumes:
+              - "application/json"
+              - "text/plain"
+              parameters:
+              - name: "customLabel"
+                in: "header"
+                required: false
+                type: "string"
+              - name: "object"
+                in: "query"
+                required: false
+                type: "string"
+              - name: "contentType"
+                in: "header"
+                required: false
+                type: "string"
+              - name: "bucket"
+                in: "query"
+                required: false
+                type: "string"
+              responses:
+                "200":
+                  description: "200 response"
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: "string"
+                    Access-Control-Allow-Methods:
+                      type: "string"
+                    Access-Control-Allow-Headers:
+                      type: "string"
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: "200"
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Methods: "'OPTIONS,PUT'"
+                      method.response.header.Access-Control-Allow-Headers: "'*'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                requestTemplates:
+                  application/json: "{ statusCode: 200 }"
+                  text/plain: "{ statusCode: 200 }"
+                passthroughBehavior: "when_no_match"
+                type: "mock"
+          /search:
+            get:
+              operationId: "searchPhotos"
+              produces:
+              - "application/json"
+              parameters:
+              - name: "q"
+                in: "query"
+                required: false
+                type: "string"
+              responses:
+                "200":
+                  description: "200 response"
+                  schema:
+                    $ref: "#/definitions/SearchResponse"
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: "string"
+                "500":
+                  description: "500 response"
+                  schema:
+                    $ref: "#/definitions/Error"
+                "403":
+                  description: "403 response"
+                  schema:
+                    $ref: "#/definitions/Error"
+              x-amazon-apigateway-integration:
+                httpMethod: "POST"
+                uri: !Sub "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/${lf2.Arn}/invocations"
+                responses:
+                  default:
+                    statusCode: "200"
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                passthroughBehavior: "when_no_match"
+                type: "aws_proxy"
+            options:
+              consumes:
+              - "application/json"
+              responses:
+                "200":
+                  description: "200 response"
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: "string"
+                    Access-Control-Allow-Methods:
+                      type: "string"
+                    Access-Control-Allow-Headers:
+                      type: "string"
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: "200"
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+                      method.response.header.Access-Control-Allow-Headers: "'*'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                requestTemplates:
+                  application/json: "{\"statusCode\": 200}"
+                passthroughBehavior: "when_no_match"
+                type: "mock"
+        definitions:
+          Error:
+            type: "object"
+            properties:
+              code:
+                type: "integer"
+                format: "int32"
+              message:
+                type: "string"
+          Photo:
+            type: "object"
+            properties:
+              url:
+                type: "string"
+              labels:
+                type: "array"
+                items:
+                  type: "string"
+          SearchResponse:
+            type: "object"
+            properties:
+              results:
+                type: "array"
+                items:
+                  $ref: "#/definitions/Photo"
+                definitions:
+                  Error:
+                    type: "object"
+                    properties:
+                      code:
+                        type: "integer"
+                        format: "int32"
+                      message:
+                        type: "string"
+                  Photo:
+                    type: "object"
+                    properties:
+                      url:
+                        type: "string"
+                      labels:
+                        type: "array"
+                        items:
+                          type: "string"
+                  SearchResponse:
+                    type: "object"
+                    properties:
+                      results:
+                        type: "array"
+                        items:
+                          $ref: "#/definitions/Photo"
+      Name: cfApi
+  search:
+    Type: AWS::OpenSearchService::Domain
+    DeletionPolicy: Delete
+    Properties:
+      AccessPolicies:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            AWS: !Sub arn:aws:iam::889594017971:role/${lf1Role}
+          Action: 'es:*'
+          Resource: !Sub arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/photos-cf/*
+      DomainName: photos-cf
+      EBSOptions:
+        EBSEnabled: true
+        Iops: 0
+        VolumeSize: 20
+        VolumeType: gp2
+      ClusterConfig:
+        DedicatedMasterEnabled: false
+        InstanceCount: 2
+        ZoneAwarenessEnabled: true
+        InstanceType: t3.small.search
