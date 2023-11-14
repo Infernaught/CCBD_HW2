@@ -43,7 +43,8 @@ def lambda_handler(event, context):
     print(f"s3response: {s3response}")
     labels = []
     if "x-amz-meta-customlabels" in s3response:
-        labels += s3response["x-amz-meta-customlabels"]
+        custom_label = json.loads(s3response["x-amz-meta-customlabels"])
+        labels += custom_label
         print(f"Labels: {labels}")
     for label in rresponse["Labels"]:
         labels.append(label["Name"])
