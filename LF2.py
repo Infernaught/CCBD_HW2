@@ -64,8 +64,8 @@ def dispatch(event):
 
     # Initiate conversation with Lex
     response = client.recognize_text(
-            botId='QRLRNAADFW', # MODIFY HERE
-            botAliasId='PIAARW6SBI', # MODIFY HERE
+            botId='I3TNCJ7UW1', # MODIFY HERE
+            botAliasId='IWRZLZDYKW', # MODIFY HERE
             localeId='en_US',
             sessionId='testuser',
             text=msg_from_user)
