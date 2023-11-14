@@ -6,8 +6,8 @@ from opensearchpy import OpenSearch, RequestsHttpConnection
 from requests_aws4auth import AWS4Auth
 
 REGION = "us-east-1"
-HOST = "search-photos-2jmjglwsrhdiu6pxozfdxexvoe.us-east-1.es.amazonaws.com"
-INDEX = "photos"
+HOST = "search-photos-cf-27dfs4gpdvp4vxd7iezhtax2xy.us-east-1.es.amazonaws.com"
+INDEX = "photos-cf"
 
 def getawsauth(region, service):
     cred = boto3.Session().get_credentials()
