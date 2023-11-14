@@ -42,10 +42,11 @@ def lambda_handler(event, context):
     s3response = s3client.head_object(Bucket=bucket, Key=obj)
     print(f"s3response: {s3response}")
     labels = []
-    if "x-amz-meta-customlabels" in s3response:
-        custom_label = json.loads(s3response["x-amz-meta-customlabels"])
-        labels += custom_label
-        print(f"Labels: {labels}")
+    
+    # add custom labels
+    custom_label = json.loads(s3response['ResponseMetadata']['HTTPHeaders']["x-amz-meta-customlabels"])
+    labels += custom_label
+    print(f"Labels: {labels}")
     for label in rresponse["Labels"]:
         labels.append(label["Name"])
     curr_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
