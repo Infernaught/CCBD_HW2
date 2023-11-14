@@ -8,7 +8,7 @@ from botocore.exceptions import ClientError
 from inflection import singularize
 
 REGION = 'us-east-1'
-HOST = 'search-photos-2jmjglwsrhdiu6pxozfdxexvoe.us-east-1.es.amazonaws.com'
+HOST = 'search-photos-cf-27dfs4gpdvp4vxd7iezhtax2xy.us-east-1.es.amazonaws.com'
 INDEX = 'photos'
 from requests_aws4auth import AWS4Auth
 
