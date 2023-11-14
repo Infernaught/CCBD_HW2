@@ -40,6 +40,7 @@ def lambda_handler(event, context):
         rresponse = rclient.detect_labels(Image={'S3Object':{'Bucket':bucket,'Name':obj}})
     s3client = boto3.client("s3", REGION)
     s3response = s3client.head_object(Bucket=bucket, Key=obj)
+    print(f"s3response: {s3response}")
     labels = []
     if "x-amz-meta-customlabels" in s3response:
         labels += s3response["x-amz-meta-customlabels"]
