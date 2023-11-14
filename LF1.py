@@ -24,7 +24,7 @@ def add_to_os(mapping):
     #    res = client.indices.create(index=INDEX)
     #except:
     #    pass
-    response = client.index(index=INDEX, body=mapping, refesh='wait_for')
+    response = client.index(index=INDEX, body=mapping, refresh='wait_for')
         
     return response
 
