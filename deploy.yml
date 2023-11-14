@@ -13,7 +13,9 @@ phases:
   post_build:
     commands:
       - aws lambda update-function-code --function-name index-photos --zip-file fileb://LF1_deployment.zip
+      - aws lambda update-function-code --function-name index-photos-cf --zip-file fileb://LF1_deployment.zip
       - aws lambda update-function-code --function-name arn:aws:lambda:us-east-1:558602268537:function:hw2-LF2 --zip-file fileb://LF2_deployment.zip
+      - aws lambda update-function-code --function-name search-photos-cf --zip-file fileb://LF2_deployment.zip
       - aws s3 cp LF1_deployment.zip s3://ccbd-hw-2-lambdas/
       - aws s3 cp LF2_deployment.zip s3://ccbd-hw-2-lambdas/
 
