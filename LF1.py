@@ -30,6 +30,7 @@ def add_to_os(mapping):
 
 def lambda_handler(event, context):
     print("HI")
+    print("demo")
     rclient = boto3.client('rekognition', REGION)
     info = event["Records"][0]
     bucket = info["s3"]["bucket"]["name"]
